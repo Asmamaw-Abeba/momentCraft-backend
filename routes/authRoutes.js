@@ -20,11 +20,11 @@ router.post('/register', async (req, res) => {
     const user = new User({ username, email, password });
     await user.save();
 
-    // Send push notification
-    await axios.post(`https://momentcraft-backend.onrender.com/api/push/notify/${user.e}`, {
-      title: 'New user Added!',
-      body: `Check out your new user: ${user.username}`,
-    });
+    // // Send push notification
+    // await axios.post(`https://momentcraft-backend.onrender.com/api/push/notify/${user.e}`, {
+    //   title: 'New user Added!',
+    //   body: `Check out your new user: ${user.username}`,
+    // });
 
     // Generate a JWT token
     const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, {
