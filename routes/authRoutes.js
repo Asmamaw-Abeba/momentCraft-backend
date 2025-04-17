@@ -21,7 +21,7 @@ router.post('/register', async (req, res) => {
     await user.save();
 
     // Send push notification
-    await axios.post(`https://momentcraft-backend.onrender.com/api/push/notify/${user.userId}`, {
+    await axios.post(`https://momentcraft-backend.onrender.com/api/push/notify/${user.email}`, {
       title: 'New user Added!',
       body: `Check out your new user: ${user.username}`,
     });
