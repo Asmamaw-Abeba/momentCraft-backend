@@ -37,5 +37,8 @@ app.use('/api/timelines', timelineRoutes);
 
 const messagesRoutes = require('./routes/messages');
 app.use('/api/messages', messagesRoutes);
+
+const pushRoutes = require('./routes/push');
+app.use('/api/push', pushRoutes);
 // Start Server
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
