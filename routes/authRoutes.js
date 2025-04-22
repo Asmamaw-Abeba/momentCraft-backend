@@ -20,11 +20,29 @@ router.post('/register', async (req, res) => {
     const user = new User({ username, email, password });
     await user.save();
 
-    // // Send push notification
-    // await axios.post(`https://momentcraft-backend.onrender.com/api/push/notify/${user.e}`, {
-    //   title: 'New user Added!',
-    //   body: `Check out your new user: ${user.username}`,
-    // });
+    // Send push notification to admin or all subscribed users
+    try {
+      // Option 1: Notify a specific admin user (replace with your admin user ID)
+      const adminUserId = process.env.ADMIN_USER_ID || '67fcf05e08e5d057233c942b'; // Set in .env or MongoDB
+      await axios.post(`https://momentcraft-backend.onrender.com/api/push/notify/${adminUserId}`, {
+        title: 'New User Registered!',
+        body: `Welcome ${user.username} to MomentCraft!`,
+      });
+
+      // Option 2: Notify all users with push subscriptions (uncomment if preferred)
+      /*
+      const users = await User.find({ 'subscriptions': { $exists: true, $ne: [] } });
+      await Promise.all(users.map(async (u) => {
+        await axios.post(`https://momentcraft-backend.onrender.com/api/push/notify/${u._id}`, {
+          title: 'New User Registered!',
+          body: `Welcome ${user.username} to MomentCraft!`,
+        });
+      }));
+      */
+    } catch (notificationError) {
+      console.error('Failed to send registration notification:', notificationError);
+      // Don't block registration if notification fails
+    }
 
     // Generate a JWT token
     const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, {
@@ -33,7 +51,8 @@ router.post('/register', async (req, res) => {
 
     res.status(201).json({ token });
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    console.error('Registration error:', err);
+    res.status(500).json({ error: 'Server error. Please try again later.' });
   }
 });
 
